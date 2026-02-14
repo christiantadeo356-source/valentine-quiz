@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Click mo ang Link nang makita mo!</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a001f, #330033);
+            font-family: 'Dancing Script', cursive;
+            text-align: center;
+            color: white;
+            padding: 50px;
+        }
+
+        h1 {
+            font-size: 45px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        #quizBox {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            width: 60%;
+            margin: auto;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        button {
+            display: block;
+            margin: 15px auto;
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: Arial, sans-serif;
+        }
+
+        button:hover {
+            background-color: #ff4d88;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        #musicControl {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 77, 136, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        #musicControl:hover {
+            background-color: #ff4d88;
+            transform: scale(1.2);
+        }
+
+        #result {
+            font-size: 28px;
+            margin-top: 30px;
+            white-space: pre-line;
+        }
+
+        /* Floating hearts */
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 100, 150, 0.7);
+            font-size: 25px;
+            cursor: pointer;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(100vh); opacity: 1; }
+            to { transform: translateY(-10vh); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #popup {
+            display: none;
+            position: fixed;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ff4d88;
+            padding: 30px;
+            border-radius: 20px;
+            font-size: 28px;
+            box-shadow: 0 0 30px pink;
+        }
+
+        #secretMessage {
+            display: none;
+            font-size: 28px;
+            color: #ff4d88;
+            margin-top: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+<h1>To: my Baby Rhian😉</h1>
+
+<button id="musicControl">🔊</button>
+
+<div id="quizBox">
+    <h2 id="question">Loading...</h2>
+    <div id="answers"></div>
+</div>
+
+<div id="result"></div>
+<div id="popup"> Happy Valentines love💖, Rhian my Babyy  </div>
+<div id="secretMessage">💌 Surprise! Galing naman na baby ko na yan ahh! I love you so much love love at dahil dan May kiss ka saken, Rhian😉. — Cjay</div>
+
+<!-- Background Music -->
+<audio id="bgMusic" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mp3">
+</audio>
+
+<script>
+    const quiz = [
+        { question: "What are we? 💍", answers: ["Mag Asawa", "Just friends", "Tropa❤️", "boi💖"], correct: 3 },
+        { question: "Who kisses the most? ❤️", answers: ["rhian", "ako", "me", "ako talaga e(rhian)"], correct: 1 },
+        { question: "When is our anniversary? 💕", answers: ["July 7", "March 17", "January 11", "August 7"], correct: 1 },
+        { question: "What is our favorite way to spend time together if ever hihi? 💖", answers: ["Watching movies", "Going on adventures", "Cooking together", "All of the above"], correct: 3 },
+        { question: "Who loves the most? 😘", answers: ["cijiy", "you", "ikaw", "All of the questiowns yern"], correct: 3 },
+        { question: "My Most Favorite about you, Rhian? 💕", answers: ["My Smile", "My Laugh", "Me", "All of the above"], correct: 3 },
+        { question: "What is our dream together? 💍", answers: ["Travel Travel ba", "Gawagawaan nan bahay sa malayong lugar, himpapawid, planeta, kalawakan, etc.", "Mamuhay nan mapayapa", "Lahat na yan ah"], correct: 3 },
+        { question: "Did you ever feel unloved by me(siG)? 💕", answers: ["Yes", "No",], correct: 1 }
+       
+        
+    ];
+
+    let currentQuestion = 0;
+
+    function loadQuestion() {
+        const questionElement = document.getElementById("question");
+        const answersElement = document.getElementById("answers");
+
+        questionElement.innerText = quiz[currentQuestion].question;
+        answersElement.innerHTML = "";
+
+        quiz[currentQuestion].answers.forEach((answer,index)=>{
+            const button = document.createElement("button");
+            button.innerText = answer;
+            button.onclick = () => checkAnswer();
+            answersElement.appendChild(button);
+        });
+    }
+
+    function checkAnswer() {
+        currentQuestion++;
+
+        if(currentQuestion < quiz.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function typeWriter(text, element, speed = 50) {
+        let i = 0;
+        function typing() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typing, speed);
+            } else {
+                showPopup();
+            }
+        }
+        typing();
+    }
+
+    function showResult() {
+        document.getElementById("quizBox").style.display = "none";
+        const result = document.getElementById("result");
+
+        let message = 
+`Happy Valentine's Day, Rhian💖
+
+Kahit ano pa mga pinag sasagot mo dan love
+mahal na mahal kita ahh ikaw pa ikaw na yan ih
+lumalagapak pa, and thankyou po for always 
+understanding me po love, my happiness,
+my love, my everything, and most of all 
+my greatest blessing.
+
+I love you more every single day.
+
+— cijay ❤️`;
+
+        typeWriter(message, result);
+    }
+
+    function showPopup() {
+        setTimeout(() => {
+            document.getElementById("popup").style.display = "block";
+        }, 1000);
+    }
+
+    loadQuestion();
+
+    function createFloatingHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("floating-heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = (Math.random() * 5 + 5) + "s";
+        document.body.appendChild(heart);
+
+        heart.onclick = () => {
+            document.getElementById("secretMessage").style.display = "block";
+        };
+
+        setTimeout(() => heart.remove(), 10000);
+    }
+
+    setInterval(createFloatingHeart, 700);
+
+    // Music control
+    const music = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicControl");
+
+    musicBtn.onclick = () => {
+        if (music.paused) {
+            music.play();
+            musicBtn.innerText = "🔊";
+        } else {
+            music.pause();
+            musicBtn.innerText = "🔇";
+        }
+    };
+</script>
+
+</body>
+</html>
